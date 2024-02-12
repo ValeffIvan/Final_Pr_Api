@@ -96,13 +96,13 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
-        [HttpGet("byId/{userId}"), Authorize]
-        public IActionResult GetUserById(int userId)
+        [HttpGet("byEmail/{Email}"), Authorize]
+        public IActionResult GetUserById(string Email)
         {
             try
             {
                 var user = _context.Users
-                    .Where(p => p.idUsers == userId)
+                    .Where(u => u.email == Email)
                     .ToList();
 
                 return Ok(user); 

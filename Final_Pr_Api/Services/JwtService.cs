@@ -12,7 +12,7 @@ namespace Final_Pr_Api.Services
         private static readonly string _issuer = "yo";
         private static readonly string _audience = "you";
 
-        public static string GenerateToken(string authUser, string email)
+        public static string GenerateToken(string username, string email)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(SecretKey());
@@ -21,8 +21,8 @@ namespace Final_Pr_Api.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, authUser),
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Email, email),
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _issuer,
@@ -43,6 +43,33 @@ namespace Final_Pr_Api.Services
             string secretKey = Convert.ToBase64String(keyBytes);
             
             return secretKey;
+        }
+
+        public static bool ValidateToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(SecretKey()); 
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _issuer, 
+                ValidAudience = _audience,
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+
+            try
+            {
+                SecurityToken validatedToken;
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out validatedToken);
+                return true; 
+            }
+            catch (Exception)
+            {
+                return false; 
+            }
         }
     }
 }

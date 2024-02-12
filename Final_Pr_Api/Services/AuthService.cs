@@ -37,7 +37,7 @@ namespace Final_Pr_Api.Services
             }
         }
 
-        private Auth ValidateCredentials(string email, string password)
+        private User ValidateCredentials(string email, string password)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Final_Pr_Api.Services
                 {
                     if (VerifyPassword(password, user.password))
                     {
-                        var authUser = new Auth { email = user.email, username = user.username, password = user.password };
+                        var authUser = new User { email = user.email, username = user.username, password = user.password };
                         return authUser;
                     }
                 }
@@ -65,7 +65,7 @@ namespace Final_Pr_Api.Services
         }
 
         public static bool VerifyPassword(string password, string hashedPassword)
-        {
+       {
             return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
     }

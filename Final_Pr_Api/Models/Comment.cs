@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Final_Pr_Api.Models
 {
@@ -9,5 +10,8 @@ namespace Final_Pr_Api.Models
         public string text { get; set; }
         public int authorId { get; set; }
         public int postId { get; set; }
+
+        [JsonIgnore]
+        public Post Post { get; set; }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Final_Pr_Api.Models;
 using Final_Pr_Api.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+
 
 namespace Final_Pr_Api.Controllers
 {
@@ -33,5 +35,17 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
+        [HttpPost("verifyToken")]
+        public IActionResult VerifyToken([FromBody] string token)
+        {
+            if (JwtService.ValidateToken(token))
+            {
+                return Ok(new { message = "Token valido" });
+            }
+            else
+            {
+                return Unauthorized(new { message = "Token inválido o expirado" });
+            }
+        }
     }
 }

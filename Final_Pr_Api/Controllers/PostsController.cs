@@ -36,13 +36,16 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
-                var posts = await _context.Posts.ToListAsync();
+                var posts = await _context.Posts
+                    .Include(p => p.Comments)
+                    .ToListAsync();
+
                 return Ok(posts);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
         }
 
         [HttpPut("{id}"), Authorize]
@@ -94,23 +97,23 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
-        [HttpGet("byauthor/{authorId}"), Authorize]
+        [HttpGet("byauthor/{authorId}")]
         public IActionResult GetPostsByAuthor(int authorId)
         {
             try
             {
-                var posts = _context.Posts
+                var postsWithComments = _context.Posts
+                    .Include(p => p.Comments)
                     .Where(p => p.authorId == authorId)
                     .ToList();
 
-                return Ok(posts); 
+                return Ok(postsWithComments);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "Error interno del servidor");
             }
         }
-
 
     }
 }

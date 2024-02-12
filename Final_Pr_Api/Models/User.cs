@@ -9,5 +9,7 @@ namespace Final_Pr_Api.Models
         public string password { get; set; }
         public string username { get; set; }
         public string email { get; set; }
+        public DateTime createTime { get; set; }
+
     }
 }
