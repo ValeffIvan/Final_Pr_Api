@@ -37,7 +37,6 @@ namespace Final_Pr_Api.Controllers
             try
             {
                 var posts = await _context.Posts
-                    .Include(p => p.Comments)
                     .ToListAsync();
 
                 return Ok(posts);
@@ -70,7 +69,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -93,7 +92,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -103,7 +102,6 @@ namespace Final_Pr_Api.Controllers
             try
             {
                 var postsWithComments = _context.Posts
-                    .Include(p => p.Comments)
                     .Where(p => p.authorId == authorId)
                     .ToList();
 
@@ -111,7 +109,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 

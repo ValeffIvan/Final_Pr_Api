@@ -43,7 +43,6 @@ namespace Final_Pr_Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
         }
 
         [HttpPut("{id}"), Authorize]
@@ -67,7 +66,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -90,12 +89,12 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("bypost/{postId}"), Authorize]
-        public IActionResult GetCommentByPost(int postId)
+        [HttpGet("bypost/{postId}")]
+        public IActionResult GetCommentsByPost(int postId)
         {
             try
             {
@@ -107,7 +106,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 

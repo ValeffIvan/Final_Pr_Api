@@ -36,16 +36,9 @@ namespace Final_Pr_Api.Controllers
         }
 
         [HttpPost("verifyToken")]
-        public IActionResult VerifyToken([FromBody] string token)
+        public bool VerifyToken([FromBody] string token)
         {
-            if (JwtService.ValidateToken(token))
-            {
-                return Ok(new { message = "Token valido" });
-            }
-            else
-            {
-                return Unauthorized(new { message = "Token inválido o expirado" });
-            }
+            return JwtService.ValidateToken(token);
         }
     }
 }

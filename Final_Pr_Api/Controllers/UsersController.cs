@@ -92,7 +92,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -102,14 +102,13 @@ namespace Final_Pr_Api.Controllers
             try
             {
                 var user = _context.Users
-                    .Where(u => u.email == Email)
-                    .ToList();
+                    .FirstOrDefault(u => u.email == Email);
 
                 return Ok(user); 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest(ex.Message);
             }
         }
 
