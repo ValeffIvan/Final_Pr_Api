@@ -1,6 +1,8 @@
 ﻿using Final_Pr_Api.Data;
 using Final_Pr_Api.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
 using System;
 using System.Linq;
 
@@ -15,49 +17,110 @@ namespace Final_Pr_Api.Services
             _context = appDbContext;
         }
 
-        public (string Token, Exception Error) Authenticate(string email, string password)
+        public AuthResponse Authenticate(string email, string password)
         {
             try
             {
-                var authUser = ValidateCredentials(email, password);
+                var user = ValidateCredentials(email, password);
 
-                if (authUser != null)
+                if (user != null)
                 {
-                    var token = JwtService.GenerateToken(authUser.username, email);
-                    return (Token: token, Error: null);
+
+                    if (user.Role != null)
+                    {
+                        var token = JwtService.GenerateToken(user.username, email, user.Role);
+
+                        var userDetails = new UserDetails
+                        {
+                            idUsers = user.idUsers,
+                            username = user.username,
+                            email = email,
+                            Role = user.Role
+                        };
+
+                        return new AuthResponse
+                        {
+                            Success = true,
+                            Token = token,
+                            User = userDetails,
+                            Message = "Inicio de sesión exitoso"
+                        };
+                    }
                 }
 
-                return (Token: null, Error: new Exception("Credenciales inválidas."));
+                return new AuthResponse
+                {
+                    Success = false,
+                    Token = null,
+                    User = null,
+                    Message = "Credenciales inválidas"
+                };
             }
             catch (Exception ex)
             {
-                // Loggea la excepción para tener información detallada
-                Console.WriteLine($"Error en la autenticación: {ex.Message}");
-                return (Token: null, Error: ex);
+                return new AuthResponse
+                {
+                    Success = false,
+                    Token = null,
+                    User = null,
+                    Message = ex.Message,
+                };
             }
         }
 
-        private User ValidateCredentials(string email, string password)
+
+
+        private UserDetails ValidateCredentials(string email, string password)
         {
             try
             {
                 var user = _context.Users.FirstOrDefault(u => u.email == email);
-                if (user != null)
+                if (user != null && VerifyPassword(password, user.password))
                 {
-                    if (VerifyPassword(password, user.password))
+                    var roleName = _context.Rol
+                        .Where(r => r.idRol == user.idRol)
+                        .Select(r => r.name)
+                        .FirstOrDefault();
+
+                    var userDetails = new UserDetails
                     {
-                        var authUser = new User { email = user.email, username = user.username, password = user.password };
-                        return authUser;
-                    }
+                        idUsers = user.idUsers,
+                        username = user.username,
+                        email = user.email,
+                        createTime = user.createTime,
+                        Role = roleName
+                    };
+                    return userDetails;
                 }
-                return null;    
+                return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en la autenticación: {ex.Message}");
                 return null;
             }
         }
+
+        public string GetRoleById(int idRol)
+        {
+            try
+            {
+                var rol = _context.Rol.FirstOrDefault(r => r.idRol == idRol);
+                if (rol != null)
+                {
+                    return rol.name;
+                }
+                else
+                {
+                    throw new Exception($"No se encontró rol");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener el rol: {ex.Message}");
+                return null;
+            }
+        }
+
 
         public static string HashPassword(string password)
         {

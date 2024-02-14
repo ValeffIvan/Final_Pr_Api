@@ -12,7 +12,7 @@ namespace Final_Pr_Api.Services
         public static readonly string _issuer = "yo";
         public static readonly string _audience = "you";
         public static string SecretKey { get; } = GenerateSecretKey();
-        public static string GenerateToken(string username, string email)
+        public static string GenerateToken(string username, string email, string rol)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(SecretKey);
@@ -23,6 +23,7 @@ namespace Final_Pr_Api.Services
                 {
             new Claim(ClaimTypes.Name, username),
             new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role, rol),
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _issuer,
@@ -46,14 +47,14 @@ namespace Final_Pr_Api.Services
         public static bool ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(SecretKey); 
+            var key = Encoding.ASCII.GetBytes(SecretKey);
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _issuer, 
+                ValidIssuer = _issuer,
                 ValidAudience = _audience,
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
@@ -66,8 +67,10 @@ namespace Final_Pr_Api.Services
             }
             catch (Exception)
             {
-                return false; 
+                return false;
             }
         }
+
+
     }
 }

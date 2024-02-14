@@ -22,16 +22,15 @@ namespace Final_Pr_Api.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] Auth auth)
         {
-
             var result = _authService.Authenticate(auth.email, auth.password);
 
-            if (result.Token != null)
+            if (result.Success)
             {
-                return Ok(new { Token = result.Token });
+                return Ok(result);
             }
             else
             {
-                return Unauthorized("Credenciales inválidas.");
+                return Unauthorized(new { message = result.Message });
             }
         }
 

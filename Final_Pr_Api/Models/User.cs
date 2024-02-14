@@ -10,6 +10,7 @@ namespace Final_Pr_Api.Models
         public string username { get; set; }
         public string email { get; set; }
         public DateTime createTime { get; set; }
+        public int idRol { get; set; }
 
     }
 }

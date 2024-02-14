@@ -46,32 +46,30 @@ namespace Final_Pr_Api.Controllers
             }
             
         }
-        //Transformarlo en un cambiar contraseña que traiga la contra vieja y la nueva para poder cambiarla
-       /*[HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUsers(int id, [FromBody] User newUser)
+
+
+        [HttpPut("{id}"), Authorize]
+        public async Task<IActionResult> ChangePassword(int id, [FromBody] string password)
         {
             try
             {
                 var user = await _context.Users.FindAsync(id);
-
                 if (user == null)
                 {
-                    return BadRequest();
+                    return NotFound($"Usuario no encontrado");
                 }
-                else
-                {
-                    user.title = newPost.title;
-                    user.description = newPost.description;
-                    await _context.SaveChangesAsync();
 
-                    return Ok(post);
-                }
+                var newPassword = AuthService.HashPassword(password);
+                user.password = newPassword;
+                await _context.SaveChangesAsync();
+
+                return Ok("Contraseña cambiada exitosamente");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return BadRequest($"Error al cambiar la contraseña: {ex.Message}");
             }
-        }*/
+        }
 
         [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> DeleteUser(int id)
@@ -96,15 +94,36 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
-        [HttpGet("byEmail/{Email}"), Authorize]
-        public IActionResult GetUserById(string Email)
+        [HttpGet("byEmail/{email}"), Authorize]
+        public IActionResult GetUserByEmail(string email)
         {
             try
             {
                 var user = _context.Users
-                    .FirstOrDefault(u => u.email == Email);
+                    .Where(u => u.email == email)
+                    .Join(_context.Rol,
+                          user => user.idRol,
+                          role => role.idRol,
+                          (user, role) => new { User = user, RolName = role.name })
+                    .FirstOrDefault();
 
-                return Ok(user); 
+                if (user != null)
+                {
+                    var userWithRol = new UserDetails 
+                    { 
+                        idUsers = user.User.idUsers,
+                        username = user.User.username,
+                        email = user.User.email,
+                        createTime = user.User.createTime,
+                        Role = user.RolName,                        
+                    };
+
+                    return Ok(userWithRol);
+                }
+                else
+                {
+                    return NotFound("Usuario no encontrado.");
+                }
             }
             catch (Exception ex)
             {
