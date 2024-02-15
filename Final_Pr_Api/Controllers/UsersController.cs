@@ -32,20 +32,34 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+       
         [HttpGet, Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             try
             {
-                var users = await _context.Users.ToListAsync();
+                var users = await _context.Users
+                    .Join(_context.Rol,
+                        user => user.idRol,
+                        role => role.idRol,
+                        (user, role) => new { User = user, RolName = role.name })
+                    .Select(u => new UserDetails {
+                        idUsers = u.User.idUsers,
+                        username = u.User.username,
+                        email = u.User.email,
+                        createTime = u.User.createTime,
+                        Role = u.RolName
+                    })
+                    .ToListAsync();
+
                 return Ok(users);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
         }
+
 
 
         [HttpPut("{id}"), Authorize]
