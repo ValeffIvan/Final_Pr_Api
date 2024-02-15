@@ -47,7 +47,7 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
-        [HttpPut("{id}"), Authorize]
+        [HttpPatch("{id}"), Authorize]
         public async Task<IActionResult> UpdatePost(int id, [FromBody] Post newPost)
         {
             try

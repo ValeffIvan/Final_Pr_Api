@@ -24,9 +24,16 @@ namespace Final_Pr_Api.Controllers
             try
             {
                 user.password = AuthService.HashPassword(user.password);
+                var userExist = _context.Users.FirstOrDefault(u => u.email == user.email);
+                if (userExist != null)
+                {
+                    return BadRequest("El usuario ya existosamente"); 
+                }
+                user.createTime = DateTime.Now;
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                return Ok();
+                return Ok(new {message = "Usuario creado con exito"});               
+
             }catch(Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -77,11 +84,37 @@ namespace Final_Pr_Api.Controllers
                 user.password = newPassword;
                 await _context.SaveChangesAsync();
 
-                return Ok("Contraseña cambiada exitosamente");
+                return Ok(new { message = "Contraseña cambiada exitosamente" });
             }
             catch (Exception ex)
             {
                 return BadRequest($"Error al cambiar la contraseña: {ex.Message}");
+            }
+        }
+
+        [HttpPatch("{id}"), Authorize]
+        public async Task<IActionResult> EditUser(int id, [FromBody] User userData)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(id);
+                if (user == null)
+                {
+                    return NotFound($"Usuario no encontrado");
+                }
+
+                user.username = userData.username;
+                user.email = userData.email;
+                user.idRol = userData.idRol;
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Usuario actualizado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar el usuario: {ex.Message}");
             }
         }
 
@@ -100,7 +133,7 @@ namespace Final_Pr_Api.Controllers
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
 
-                return Ok();
+                return Ok(new { message = "Usuario eliminado con éxito" });
             }
             catch (Exception ex)
             {
@@ -144,7 +177,6 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
 
     }
 }

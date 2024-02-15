@@ -1,5 +1,6 @@
 ﻿using Final_Pr_Api.Data;
 using Final_Pr_Api.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Common;
@@ -35,7 +36,8 @@ namespace Final_Pr_Api.Services
                             idUsers = user.idUsers,
                             username = user.username,
                             email = email,
-                            Role = user.Role
+                            Role = user.Role,
+                            createTime = user.createTime,
                         };
 
                         return new AuthResponse
@@ -120,7 +122,6 @@ namespace Final_Pr_Api.Services
                 return null;
             }
         }
-
 
         public static string HashPassword(string password)
         {

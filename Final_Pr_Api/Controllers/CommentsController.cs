@@ -45,7 +45,7 @@ namespace Final_Pr_Api.Controllers
             }
         }
 
-        [HttpPut("{id}"), Authorize]
+        [HttpPatch("{id}"), Authorize]
         public async Task<IActionResult> UpdateComment(int id, [FromBody] Comment newComment)
         {
             try
