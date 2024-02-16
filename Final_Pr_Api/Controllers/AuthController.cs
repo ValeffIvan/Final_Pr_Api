@@ -30,7 +30,7 @@ namespace Final_Pr_Api.Controllers
             }
             else
             {
-                return Unauthorized(new { message = result.Message });
+                return BadRequest(result);
             }
         }
 

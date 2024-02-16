@@ -22,12 +22,13 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
+                post.createTime = DateTime.Now;
                 _context.Posts.Add(post);
                 await _context.SaveChangesAsync();
                 return Ok();
             }catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
@@ -37,17 +38,30 @@ namespace Final_Pr_Api.Controllers
             try
             {
                 var posts = await _context.Posts
+                    .Join(_context.Users,
+                          post => post.authorId,
+                          user => user.idUsers,
+                          (post, user) => new
+                          {
+                              idPost = post.idPost,
+                              title = post.title,
+                              description = post.description,
+                              authorId = post.authorId,
+                              AuthorUsername = user.username,
+                              createTime = post.createTime,
+                          })
                     .ToListAsync();
 
                 return Ok(posts);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
-        [HttpPatch("{id}"), Authorize]
+
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> UpdatePost(int id, [FromBody] Post newPost)
         {
             try
@@ -56,7 +70,7 @@ namespace Final_Pr_Api.Controllers
 
                 if (post == null)
                 {
-                    return BadRequest();
+                    return NotFound(new { status = 404, message = "Post no encontrado" });
                 }
                 else
                 {
@@ -64,12 +78,12 @@ namespace Final_Pr_Api.Controllers
                     post.description = newPost.description;
                     await _context.SaveChangesAsync();
 
-                    return Ok(post);
+                    return Ok(new {status = 200, message = "Post modificado con exito"});
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
@@ -82,17 +96,20 @@ namespace Final_Pr_Api.Controllers
 
                 if (post == null)
                 {
-                    return NotFound();
+                    return NotFound(new {status= 404, message= "Post no encontrado"});
                 }
+
+                var comments = _context.Comments.Where(c => c.postId == id);
+                _context.Comments.RemoveRange(comments);
 
                 _context.Posts.Remove(post);
                 await _context.SaveChangesAsync();
 
-                return Ok();
+                return Ok(new {status=200, message="Post eliminado con exito"});
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
@@ -101,15 +118,27 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
-                var postsWithComments = _context.Posts
+                var postsWithAuthorUsername = _context.Posts
                     .Where(p => p.authorId == authorId)
+                    .Join(_context.Users,
+                          post => post.authorId,
+                          user => user.idUsers,
+                          (post, user) => new
+                          {
+                              idPost = post.idPost,
+                              title = post.title,
+                              description = post.description,
+                              authorId = post.authorId,
+                              AuthorUsername = user.username,
+                              createTime = post.createTime,
+                          })
                     .ToList();
 
-                return Ok(postsWithComments);
+                return Ok(postsWithAuthorUsername);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 

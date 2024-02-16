@@ -79,7 +79,7 @@ namespace Final_Pr_Api.Services
                 var user = _context.Users.FirstOrDefault(u => u.email == email);
                 if (user != null && VerifyPassword(password, user.password))
                 {
-                    var roleName = _context.Rol
+                    var roleName = _context.Roles
                         .Where(r => r.idRol == user.idRol)
                         .Select(r => r.name)
                         .FirstOrDefault();
@@ -106,7 +106,7 @@ namespace Final_Pr_Api.Services
         {
             try
             {
-                var rol = _context.Rol.FirstOrDefault(r => r.idRol == idRol);
+                var rol = _context.Roles.FirstOrDefault(r => r.idRol == idRol);
                 if (rol != null)
                 {
                     return rol.name;

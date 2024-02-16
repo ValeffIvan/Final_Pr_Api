@@ -9,6 +9,7 @@ namespace Final_Pr_Api.Models
         public string text { get; set; }
         public int authorId { get; set; }
         public int postId { get; set; }
+        public DateTime? createTime { get; set; }
 
     }
 }

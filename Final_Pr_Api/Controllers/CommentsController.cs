@@ -23,29 +23,17 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
+                comment.createTime = DateTime.Now;
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
-                return Ok();
+                return Ok(new {status= 200, message = "Comentario creado con exito"});
             }catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllComments()
-        {
-            try
-            {
-                var posts = await _context.Comments.ToListAsync();
-                return Ok(posts);
-            }catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPatch("{id}"), Authorize]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> UpdateComment(int id, [FromBody] Comment newComment)
         {
             try
@@ -54,7 +42,7 @@ namespace Final_Pr_Api.Controllers
 
                 if (comment == null)
                 {
-                    return BadRequest();
+                    return NotFound(new { status = 404, message = "Comentario no encontrado" });
                 }
                 else
                 {
@@ -66,7 +54,7 @@ namespace Final_Pr_Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
@@ -79,17 +67,17 @@ namespace Final_Pr_Api.Controllers
 
                 if (comment == null)
                 {
-                    return NotFound();
+                    return NotFound(new { status = 404, message = "Comentario no encontrado" });
                 }
 
                 _context.Comments.Remove(comment);
                 await _context.SaveChangesAsync();
 
-                return Ok();
+                return Ok(new {status = 200, message = "Comentario eliminado con exito"});
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
 
@@ -98,17 +86,34 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
-                var comments = _context.Comments
-                    .Where(p => p.postId == postId)
+                var commentsWithUsernames = _context.Comments
+                    .Where(c => c.postId == postId)
+                    .Join(_context.Users,
+                          comment => comment.authorId,
+                          user => user.idUsers,
+                          (comment, user) => new
+                          {
+                              Comment = comment,
+                              AuthorUsername = user.username
+                          })
+                    .Select(c => new
+                    {
+                        c.Comment.authorId,
+                        c.Comment.idComment,
+                        c.Comment.text,
+                        c.Comment.createTime,
+                        c.AuthorUsername
+                    })
                     .ToList();
 
-                return Ok(comments); 
+                return Ok(commentsWithUsernames);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { status = 500, message = ex.Message });
             }
         }
+
 
 
     }
