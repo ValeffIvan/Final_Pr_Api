@@ -19,11 +19,11 @@ namespace Final_Pr_Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
             try
             {
-                var roles = _context.Roles.ToList();
+                var roles = await _context.Roles.ToListAsync();
 
                 return Ok(roles);
             }
@@ -32,6 +32,7 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
     }
 }

@@ -114,11 +114,11 @@ namespace Final_Pr_Api.Controllers
         }
 
         [HttpGet("byauthor/{authorId}")]
-        public IActionResult GetPostsByAuthor(int authorId)
+        public async Task<IActionResult> GetPostsByAuthor(int authorId)
         {
             try
             {
-                var postsWithAuthorUsername = _context.Posts
+                var postsWithAuthorUsername = await _context.Posts
                     .Where(p => p.authorId == authorId)
                     .Join(_context.Users,
                           post => post.authorId,
@@ -132,7 +132,7 @@ namespace Final_Pr_Api.Controllers
                               AuthorUsername = user.username,
                               createTime = post.createTime,
                           })
-                    .ToList();
+                    .ToListAsync();
 
                 return Ok(postsWithAuthorUsername);
             }
@@ -141,6 +141,7 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(new { status = 500, message = ex.Message });
             }
         }
+
 
     }
 }

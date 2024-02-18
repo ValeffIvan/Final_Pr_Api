@@ -23,7 +23,7 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
-                var userExist = _context.Users.FirstOrDefault(u => u.email == user.email);
+                var userExist = _context.Users.FirstOrDefaultAsync(u => u.email == user.email);
 
                 if (userExist != null)
                 {
@@ -168,27 +168,27 @@ namespace Final_Pr_Api.Controllers
         }
 
         [HttpGet("byEmail/{email}"), Authorize]
-        public IActionResult GetUserByEmail(string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             try
             {
-                var user = _context.Users
+                var user = await _context.Users
                     .Where(u => u.email == email)
                     .Join(_context.Roles,
                           user => user.idRol,
                           role => role.idRol,
                           (user, role) => new { User = user, RolName = role.name })
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
 
                 if (user != null)
                 {
-                    var userWithRol = new UserDetails 
-                    { 
+                    var userWithRol = new UserDetails
+                    {
                         idUsers = user.User.idUsers,
                         username = user.User.username,
                         email = user.User.email,
                         createTime = user.User.createTime,
-                        Role = user.RolName,                        
+                        Role = user.RolName,
                     };
 
                     return Ok(userWithRol);
@@ -203,6 +203,7 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(new { status = 500, message = ex.Message });
             }
         }
+
 
     }
 }

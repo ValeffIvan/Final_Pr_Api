@@ -102,11 +102,11 @@ namespace Final_Pr_Api.Services
             }
         }
 
-        public string GetRoleById(int idRol)
+        public async Task<string> GetRoleByIdAsync(int idRol)
         {
             try
             {
-                var rol = _context.Roles.FirstOrDefault(r => r.idRol == idRol);
+                var rol = await _context.Roles.FirstOrDefaultAsync(r => r.idRol == idRol);
                 if (rol != null)
                 {
                     return rol.name;
@@ -122,6 +122,7 @@ namespace Final_Pr_Api.Services
                 return null;
             }
         }
+
 
         public static string HashPassword(string password)
         {

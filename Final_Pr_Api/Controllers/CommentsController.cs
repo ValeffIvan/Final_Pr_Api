@@ -82,11 +82,11 @@ namespace Final_Pr_Api.Controllers
         }
 
         [HttpGet("bypost/{postId}")]
-        public IActionResult GetCommentsByPost(int postId)
+        public async Task<IActionResult> GetCommentsByPost(int postId)
         {
             try
             {
-                var commentsWithUsernames = _context.Comments
+                var commentsWithUsernames = await _context.Comments
                     .Where(c => c.postId == postId)
                     .Join(_context.Users,
                           comment => comment.authorId,
@@ -104,7 +104,7 @@ namespace Final_Pr_Api.Controllers
                         c.Comment.createTime,
                         c.AuthorUsername
                     })
-                    .ToList();
+                    .ToListAsync();
 
                 return Ok(commentsWithUsernames);
             }
@@ -113,8 +113,6 @@ namespace Final_Pr_Api.Controllers
                 return BadRequest(new { status = 500, message = ex.Message });
             }
         }
-
-
 
     }
 }
