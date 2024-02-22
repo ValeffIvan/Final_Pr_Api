@@ -9,9 +9,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOrigin",
