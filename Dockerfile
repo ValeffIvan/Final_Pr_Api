@@ -20,4 +20,4 @@ ENTRYPOINT ["dotnet", "Final_Pr_Api.dll"]
 
 ENV ASPNETCORE_ENVIRONMENT=Development
 
-EXPOSE 443
+EXPOSE 8080
