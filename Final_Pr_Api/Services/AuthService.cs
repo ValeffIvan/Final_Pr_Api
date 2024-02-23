@@ -26,28 +26,24 @@ namespace Final_Pr_Api.Services
 
                 if (user != null)
                 {
+                    var token = JwtService.GenerateToken(user.username, email, user.Role);
 
-                    if (user.Role != null)
+                    var userDetails = new UserDetails
                     {
-                        var token = JwtService.GenerateToken(user.username, email, user.Role);
+                        idUsers = user.idUsers,
+                        username = user.username,
+                        email = email,
+                        Role = user.Role,
+                        createTime = user.createTime,
+                    };
 
-                        var userDetails = new UserDetails
-                        {
-                            idUsers = user.idUsers,
-                            username = user.username,
-                            email = email,
-                            Role = user.Role,
-                            createTime = user.createTime,
-                        };
-
-                        return new AuthResponse
-                        {
-                            Success = true,
-                            Token = token,
-                            User = userDetails,
-                            Message = "Inicio de sesión exitoso"
-                        };
-                    }
+                    return new AuthResponse
+                    {
+                        Success = true,
+                        Token = token,
+                        User = userDetails,
+                        Message = "Inicio de sesión exitoso"
+                    };
                 }
 
                 return new AuthResponse

@@ -14,6 +14,7 @@ namespace Final_Pr_Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
+
         public UsersController(AppDbContext appDbContext) {
             _context = appDbContext;
         }
