@@ -24,7 +24,7 @@ namespace Final_Pr_Api.Controllers
         {
             try
             {
-                var userExist = _context.Users.FirstOrDefaultAsync(u => u.email == user.email);
+                var userExist = _context.Users.FirstOrDefault(u => u.email == user.email);
 
                 if (userExist != null)
                 {
