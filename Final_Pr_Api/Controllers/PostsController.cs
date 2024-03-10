@@ -50,6 +50,7 @@ namespace Final_Pr_Api.Controllers
                               AuthorUsername = user.username,
                               createTime = post.createTime,
                           })
+                    .OrderByDescending(post => post.createTime)
                     .ToListAsync();
 
                 return Ok(posts);
@@ -132,6 +133,7 @@ namespace Final_Pr_Api.Controllers
                               AuthorUsername = user.username,
                               createTime = post.createTime,
                           })
+                    .OrderByDescending(post => post.createTime)
                     .ToListAsync();
 
                 return Ok(postsWithAuthorUsername);

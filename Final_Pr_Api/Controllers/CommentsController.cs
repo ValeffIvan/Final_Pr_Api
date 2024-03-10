@@ -96,6 +96,7 @@ namespace Final_Pr_Api.Controllers
                               Comment = comment,
                               AuthorUsername = user.username
                           })
+                    .OrderByDescending(c => c.Comment.createTime)
                     .Select(c => new
                     {
                         c.Comment.authorId,
